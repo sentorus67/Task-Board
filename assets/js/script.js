@@ -15,12 +15,43 @@ function generateTaskId() {
 
     uniqueID +=keyPiece;
  }
- console.log(uniqueID);
+ return uniqueID;
+ 
 }
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
+   const cardBody= document.createElement("body");
+   const cardHeader= document.createElement('header');
+   const cardMain= document.createElement('main');
+   const cardFooter= document.createElement('button');
 
+   const cardHeadText= document.createElement('h2');
+   const cardBodyText1= document.createElement('p');
+   const cardBodyText2= document.createElement('p');
+   const cardFooterText= document.createElement('h2');
+
+   cardHeadText.textContent=generateTaskId();
+   cardBodyText1.textContent=generateTaskId();
+   cardBodyText2.textContent=generateTaskId();
+   cardFooterText.textContent="Remove";
+
+   $(cardBody).addClass('body');
+   $(cardHeader).addClass('header');
+   $(cardMain).addClass('main');
+   $(cardFooter).addClass('footer');
+
+   cardHeader.appendChild(cardHeadText);
+   cardMain.appendChild(cardBodyText1);
+   cardMain.appendChild(cardBodyText2);
+   cardFooter.appendChild(cardFooterText);
+
+   cardBody.appendChild(cardHeader);
+   cardBody.appendChild(cardMain);
+   cardBody.appendChild(cardFooter);
+
+
+    $('#to-do').append(cardBody);
 }
 
 // Todo: create a function to render the task list and make cards draggable
@@ -48,7 +79,11 @@ $("#openTaskForm").on("click", function()
     $( "#enterTask" ).dialog();
   } );
 
-generateTaskId();
+
+$("#submitButton").on("click",function(){
+    createTaskCard();
+});
+
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
