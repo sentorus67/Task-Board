@@ -1,10 +1,21 @@
+
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 
+
+
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
+ let charlist="1234567890qwertyuiopasdfghjklzxcvbnm";
+ let uniqueID="";
 
+ for (let index = 0; index < 11; index++) {
+    const keyPiece = charlist.charAt(Math.floor(Math.random()*(charlist.length)));
+
+    uniqueID +=keyPiece;
+ }
+ console.log(uniqueID);
 }
 
 // Todo: create a function to create a task card
@@ -31,6 +42,13 @@ function handleDeleteTask(event){
 function handleDrop(event, ui) {
 
 }
+
+$("#openTaskForm").on("click", function() 
+  {
+    $( "#enterTask" ).dialog();
+  } );
+
+generateTaskId();
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
