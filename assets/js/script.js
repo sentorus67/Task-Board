@@ -4,7 +4,10 @@
 // let taskList = localStorage.getItem("tasks");
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 let taskbox=[];
+let taskIPBox=[];
+let taskDone=[];
 
+function setExisitingTasks(){
 if(taskList != null){
     
     for (let index = 0; index < taskList.length; index++) {
@@ -13,6 +16,7 @@ if(taskList != null){
         taskbox.push(element);
         
     }
+}
 }
 
 // Todo: create a function to generate a unique task id
@@ -40,16 +44,17 @@ function createTaskCard(title, description, date,id) {
    const cardBodyText1= document.createElement('p');
    const cardBodyText2= document.createElement('p');
    const cardFooterText= document.createElement('h3');
-    const uniqueID= id;
-    console.log(uniqueID);
+   const uniqueID= id;
+  
    cardHeadText.textContent=title;
    cardBodyText1.textContent=description;
    cardBodyText2.textContent=date;
    cardFooterText.textContent="Remove";
 
-   $(cardBody).addClass('body');
-//    $(cardBody).attr('id',uniqueID);
+   $(cardBody).addClass('body').css('z-index',1000);
+
     cardBody.id=uniqueID;
+    
    $(cardHeader).addClass('header');
    $(cardMain).addClass('main');
    $(cardFooter).addClass('footer delete-btn');
@@ -67,13 +72,25 @@ function createTaskCard(title, description, date,id) {
    cardBody.appendChild(cardMain);
    cardBody.appendChild(cardFooter);
 
+   $(cardBody).draggable
+   ({
+    revert: 'invalid'
+    });
+
+  cardBody.ondragover = function(event) {
+    event.preventDefault();
+  }
 
     $('#to-do').append(cardBody);
 }
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
+//  for (let index = 0; index < taskbox.length; index++) {
+//     const element = taskbox[index];
 
+    
+//  }
 }
 
 // Todo: create a function to handle adding a new task
@@ -123,7 +140,12 @@ function handleDrop(event, ui) {
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
-    
+
+$('#in-progress').droppable();
+$('#to-do').droppable();
+$('#done').droppable();
+
+    setExisitingTasks();
     $("#openTaskForm").on("click", function() 
     {
       $( "#enterTask" ).dialog();
