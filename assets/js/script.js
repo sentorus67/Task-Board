@@ -1,9 +1,19 @@
 
 // Retrieve tasks and nextId from localStorage
-let taskList = JSON.parse(localStorage.getItem("tasks"));
+ let taskList = JSON.parse(localStorage.getItem("tasks"));
+// let taskList = localStorage.getItem("tasks");
 let nextId = JSON.parse(localStorage.getItem("nextId"));
+let taskbox=[];
 
-
+if(taskList != null){
+    
+    for (let index = 0; index < taskList.length; index++) {
+        const element = taskList[index];
+        createTaskCard(element.title,element.description,element.date,element.id);
+        taskbox.push(element);
+        
+    }
+}
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
@@ -20,7 +30,7 @@ function generateTaskId() {
 }
 
 // Todo: create a function to create a task card
-function createTaskCard(title, description, date) {
+function createTaskCard(title, description, date,id) {
    const cardBody= document.createElement("body");
    const cardHeader= document.createElement('header');
    const cardMain= document.createElement('main');
@@ -30,13 +40,16 @@ function createTaskCard(title, description, date) {
    const cardBodyText1= document.createElement('p');
    const cardBodyText2= document.createElement('p');
    const cardFooterText= document.createElement('h3');
-
+    const uniqueID= id;
+    console.log(uniqueID);
    cardHeadText.textContent=title;
    cardBodyText1.textContent=description;
    cardBodyText2.textContent=date;
    cardFooterText.textContent="Remove";
 
    $(cardBody).addClass('body');
+//    $(cardBody).attr('id',uniqueID);
+    cardBody.id=uniqueID;
    $(cardHeader).addClass('header');
    $(cardMain).addClass('main');
    $(cardFooter).addClass('footer delete-btn');
@@ -69,21 +82,44 @@ function handleAddTask(event){
     const cardTitle=$('#title').val();
     const cardDescription=$('#Due-Date').val();
     const cardDate=$('#Description').val();
-    createTaskCard(cardTitle,cardDescription,cardDate);
+    const uniqueID= generateTaskId();
+    createTaskCard(cardTitle,cardDescription,cardDate,uniqueID);
 
+    const taskInfo={
+        title: cardTitle,
+        description: cardDescription,
+        date: cardDate,
+        id: uniqueID,
+    }
+    taskbox.push(taskInfo);
+
+    $('#title').val('');
+    $('#Due-Date').val('');
+    $('#Description').val('');
+    console.log(taskbox);
+    taskList=localStorage.setItem('tasks',JSON.stringify(taskbox));
+    
 }
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(x){
    const parent=x.parentNode;
-   parent.remove();
+   for (let index = 0; index < taskList.length; index++) {
+    const element = taskList[index];
+    if (element.id == parent.id){
+        newBox=taskbox.toSpliced(index,1);
+        taskList=localStorage.setItem('tasks',JSON.stringify(newBox));
+         break;
+    }
+   }
+  parent.remove();
+    
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
 
 }
-
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
@@ -93,11 +129,11 @@ $(document).ready(function () {
       $( "#enterTask" ).dialog();
     });
   
-  
   $("#submitButton").on("click",function(){
      if($('#title').val() !='' && $('#Due-Date').val()!='' && $('#Description').val() !='' )
       {
       handleAddTask();
+     
       $( "#enterTask" ).dialog("close");
       }
       else
@@ -105,4 +141,5 @@ $(document).ready(function () {
           alert('One or more boxes are empty.')
       }
   });
+  
 });
