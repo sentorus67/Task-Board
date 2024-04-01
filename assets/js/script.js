@@ -135,15 +135,19 @@ function handleDeleteTask(x){
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-
+    const draggedBody=ui.draggable[0];
+    $(draggedBody).detach();
+    $(draggedBody).appendTo($(this));
+    $(draggedBody).css('top',0);
+    $(draggedBody).css('left',0);
+    //console.log(draggedBody);
+console.log("Item was dropped (function recognition");
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
 
-$('#in-progress').droppable();
-$('#to-do').droppable();
-$('#done').droppable();
+
 
     setExisitingTasks();
     $("#openTaskForm").on("click", function() 
@@ -163,5 +167,22 @@ $('#done').droppable();
           alert('One or more boxes are empty.')
       }
   });
+  
+  $('#in-progress').droppable({
+    //accept: '.draggable',
+    drop: handleDrop,
+  });
+
+    $('#to-do').droppable({
+       
+         drop: handleDrop,
+    });
+
+   $('#done').droppable({
+    drop: handleDrop,
+   });
+
+  
+
   
 });
