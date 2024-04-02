@@ -3,7 +3,7 @@
  let taskList = JSON.parse(localStorage.getItem("tasks"));
  let taskProgList=JSON.parse(localStorage.getItem('progress'));
  let taskDoList=JSON.parse(localStorage.getItem("done"));
-// let taskList = localStorage.getItem("tasks");
+
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 
 let taskbox=[];
@@ -231,17 +231,7 @@ $(document).ready(function () {
     
     });
 
-// $("#Due-Date").datepicker({ 
 
-//     beforeShow:function(textbox, instance){
-//         $('#ui-datepicker-div').css({
-//             position: 'absolute',
-//             top:-40,
-//             left:5                   
-//         });
-//         // $('#bookingBox').append($('#Due-Date'));
-//         // $('#ui-datepicker-div').hide();
-//     } });
    
   
 });
