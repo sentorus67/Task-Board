@@ -1,23 +1,14 @@
 
 // Retrieve tasks and nextId from localStorage
  let taskList = JSON.parse(localStorage.getItem("tasks"));
+ let taskProgList=JSON.parse(localStorage.getItem('progress'));
+ let taskDoList=JSON.parse(localStorage.getItem("done"));
 // let taskList = localStorage.getItem("tasks");
 let nextId = JSON.parse(localStorage.getItem("nextId"));
-let taskbox=[];
-let taskIPBox=[];
-let taskDone=[];
 
-function setExisitingTasks(){
-if(taskList != null){
-    
-    for (let index = 0; index < taskList.length; index++) {
-        const element = taskList[index];
-        createTaskCard(element.title,element.description,element.date,element.id);
-        taskbox.push(element);
-        
-    }
-}
-}
+let taskbox=[];
+
+const today= dayjs();
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
@@ -45,13 +36,16 @@ function createTaskCard(title, description, date,id) {
    const cardBodyText2= document.createElement('p');
    const cardFooterText= document.createElement('h3');
    const uniqueID= id;
-  
+   const timeDue=dayjs().format(date);
+
    cardHeadText.textContent=title;
    cardBodyText1.textContent=description;
+  
    cardBodyText2.textContent=date;
    cardFooterText.textContent="Remove";
 
-   $(cardBody).addClass('body').css('z-index',1000);
+   $(cardBody).addClass('body').css('z-index',100).css({"border-width":'5px', "border-style":"solid", "border-color":'black'});
+
 
     cardBody.id=uniqueID;
     
@@ -64,13 +58,24 @@ function createTaskCard(title, description, date,id) {
    cardMain.appendChild(cardBodyText2);
    cardFooter.appendChild(cardFooterText);
 
-   cardFooter.addEventListener('click',function(){
-    handleDeleteTask(cardFooter)
-   });
+   
 
    cardBody.appendChild(cardHeader);
    cardBody.appendChild(cardMain);
    cardBody.appendChild(cardFooter);
+
+   cardFooter.addEventListener('click',function(){
+    handleDeleteTask(cardFooter)
+
+   });
+   const approachingTime=today.diff(timeDue);
+   if(approachingTime <0){
+    $(cardBody).css('background-color','yellow');
+   }
+   else{
+    $(cardBody).css('background-color','red');
+   }
+ 
 
    $(cardBody).draggable
    ({
@@ -80,41 +85,59 @@ function createTaskCard(title, description, date,id) {
   cardBody.ondragover = function(event) {
     event.preventDefault();
   }
-
-    $('#to-do').append(cardBody);
+  return cardBody
+    
 }
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
-//  for (let index = 0; index < taskbox.length; index++) {
-//     const element = taskbox[index];
 
+    if(taskList != null){
     
-//  }
+        for (let index = 0; index < taskList.length; index++) {
+            const element = taskList[index];
+
+            if(element.taskStatus==1){
+            $('#to-do').append(createTaskCard(element.title,element.description,element.date,element.id))};
+
+            if(element.taskStatus==2){
+                $('#in-progress').append(createTaskCard(element.title,element.description,element.date,element.id))};
+
+            if(element.taskStatus==3){
+                $('#done').append(createTaskCard(element.title,element.description,element.date,element.id))};
+            
+            taskbox.push(element);
+            
+        }
+    }
+
+ 
 }
 
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
     
     const cardTitle=$('#title').val();
-    const cardDescription=$('#Due-Date').val();
-    const cardDate=$('#Description').val();
+    const cardDate=$('#Due-Date').val();
+    const cardDescription=$('#Description').val();
     const uniqueID= generateTaskId();
-    createTaskCard(cardTitle,cardDescription,cardDate,uniqueID);
+   $('#to-do').append(createTaskCard(cardTitle,cardDescription,cardDate,uniqueID));
 
     const taskInfo={
         title: cardTitle,
         description: cardDescription,
         date: cardDate,
         id: uniqueID,
+        taskStatus: 1,
     }
     taskbox.push(taskInfo);
 
     $('#title').val('');
     $('#Due-Date').val('');
     $('#Description').val('');
-    console.log(taskbox);
+
     taskList=localStorage.setItem('tasks',JSON.stringify(taskbox));
+    taskList = JSON.parse(localStorage.getItem("tasks"));
     
 }
 
@@ -126,6 +149,7 @@ function handleDeleteTask(x){
     if (element.id == parent.id){
         newBox=taskbox.toSpliced(index,1);
         taskList=localStorage.setItem('tasks',JSON.stringify(newBox));
+        taskList = JSON.parse(localStorage.getItem("tasks"));
          break;
     }
    }
@@ -136,23 +160,41 @@ function handleDeleteTask(x){
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
     const draggedBody=ui.draggable[0];
-    $(draggedBody).detach();
-    $(draggedBody).appendTo($(this));
+    const parentBox=$(this)[0].id;
     $(draggedBody).css('top',0);
     $(draggedBody).css('left',0);
-    //console.log(draggedBody);
-console.log("Item was dropped (function recognition");
+    $(draggedBody).detach();
+    $(draggedBody).appendTo($(this));
+    if(parentBox== 'to-do'){
+        draggedBody.taskStatus=1;
+    }
+    if(parentBox== 'in-progress'){
+        draggedBody.taskStatus=2;
+    }
+    if(parentBox== 'done'){
+        draggedBody.taskStatus=3;
+    }
+    for (let index = 0; index < taskbox.length; index++) {
+        if(taskbox[index].id == draggedBody.id){
+            taskbox[index].taskStatus=draggedBody.taskStatus;
+        }
+        
+    }
+
+    taskList=localStorage.setItem('tasks',JSON.stringify(taskbox));
+    taskList = JSON.parse(localStorage.getItem("tasks"));
+    
+
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
 
+    renderTaskList();
 
-
-    setExisitingTasks();
     $("#openTaskForm").on("click", function() 
-    {
-      $( "#enterTask" ).dialog();
+    { 
+      $( "#enterTask" ).dialog({draggable:false, modal:true,width:600,height:500}).css('z-index',3000);
     });
   
   $("#submitButton").on("click",function(){
@@ -168,21 +210,38 @@ $(document).ready(function () {
       }
   });
   
-  $('#in-progress').droppable({
-    //accept: '.draggable',
-    drop: handleDrop,
-  });
+    $('#in-progress').droppable({
+        drop: handleDrop,
+     });
 
     $('#to-do').droppable({
-       
          drop: handleDrop,
     });
-
    $('#done').droppable({
-    drop: handleDrop,
+        drop: handleDrop,
    });
 
   
+   $('#Due-Date').datepicker({
 
+    beforeShow: function() {
+        $("#ui-datepicker-div").appendTo($("#enterTask"));
+        $.datepicker._pos = [50, 100];
+    }
+    
+    });
+
+// $("#Due-Date").datepicker({ 
+
+//     beforeShow:function(textbox, instance){
+//         $('#ui-datepicker-div').css({
+//             position: 'absolute',
+//             top:-40,
+//             left:5                   
+//         });
+//         // $('#bookingBox').append($('#Due-Date'));
+//         // $('#ui-datepicker-div').hide();
+//     } });
+   
   
 });

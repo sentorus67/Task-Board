@@ -23,28 +23,31 @@
   <div class="container">
 
     <div class="text-center mb-5">
-      <button class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#formModal" id="openTaskForm">
+      <button class="btn btn-success"  data-bs-toggle="modal-lg" data-bs-target="#formModal" id="openTaskForm">
         Add Task</button>
        
     </div>
     
     <!-- Todo: Create a modal with a form to add tasks -->
-    <section class="form modal" id="enterTask">
+    <section class="form modal card" id="enterTask">
 
-      <div class="card-header"> 
+      <div class="header"> 
         <h1>Add <A></A> Task</h1>
       </div>
 
-      <div class="card-body">
+      <div class="modal-body row ">
+        <!-- <div class="col"> <input class="form-control" type="text" id="title" placeholder="Title"></div>
+        <div class="col"> <input class="form-control" type="text" id="Due-Date" placeholder="Due-Date"></div>
+        <div class="col"> <input class="form-control" type="text" id="Description" placeholder="Description"></div> -->
 
         <label for="title">Title: </label>
-        <input type="text" id="title">
+        <input class="col" type="text" id="title">
 
-        <label for="Due-Date">Due Date: </label>
-        <input type="text" id="Due-Date">
+        <label  for="Due-Date">Due Date: </label>
+        <input class="col" type="text" id="Due-Date">
 
-        <label for="Description">Description: </label>
-        <input type="text" id="Description">
+        <label  for="Description">Description: </label>
+        <input class="form-control input-lg" type="text" id="Description">
 
         <button type="submit" id="submitButton">Submit</button>
       </div>
